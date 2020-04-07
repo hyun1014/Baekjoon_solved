@@ -9,20 +9,10 @@ using namespace std;
 set<vector<char>> s;
 pair<set<vector<char>>::iterator, bool> flag;
 vector<char> p;
-vector<char> swap(vector<char> pp, int a, int b){
-    vector<char> cpy;
-    for(int i=0 ; i<9 ; i++)
-        cpy.push_back(pp[i]);
-    char tmp = cpy[a];
-    cpy[a] = cpy[b];
-    cpy[b] = tmp;
-    return cpy;
-}
-int foo(pair<set<vector<char>>::iterator, bool> p){
-    if(p.second)
-        return 1;
-    else
-        return 0;
+void swap(int a, int b){
+    char tmp = p[a];
+    p[a] = p[b];
+    p[b] = tmp;
 }
 bool cmpans(vector<char> v){
     for(int i=0 ; i<9 ; i++)
@@ -38,43 +28,45 @@ int findz(vector<char> pu){
 }
 int bfs(){
     queue<pair<vector<char>,int>> q;
-    vector<char> cur;
-    vector<char> next;
     int cnt, x, y, idx;
     q.push(make_pair(p, 0));
     s.insert(p);
     while(!q.empty()){
-        cur = q.front().first;
+        p = q.front().first;
         cnt = q.front().second;
         q.pop();
-        if(cmpans(cur))
+        if(cmpans(p))
             return cnt;
-        idx = findz(cur);
+        idx = findz(p);
         x = idx % 3;
         y = idx / 3;
         if(x!=0){
-            next = swap(cur, idx, idx-1);
-            flag = s.insert(next);
+            swap(idx, idx-1);
+            flag = s.insert(p);
             if(flag.second)
-                q.push(make_pair(next, cnt+1));
+                q.push(make_pair(p, cnt+1));
+            swap(idx, idx-1);
         }
         if(x!=2){
-            next = swap(cur, idx, idx+1);
-            flag = s.insert(next);
+            swap(idx, idx+1);
+            flag = s.insert(p);
             if(flag.second)
-                q.push(make_pair(next, cnt+1));
+                q.push(make_pair(p, cnt+1));
+            swap(idx, idx+1);
         }
         if(y!=0){
-            next = swap(cur, idx, idx-3);
-            flag = s.insert(next);
+            swap(idx, idx-3);
+            flag = s.insert(p);
             if(flag.second)
-                q.push(make_pair(next, cnt+1));
+                q.push(make_pair(p, cnt+1));
+            swap(idx, idx-3);
         }
         if(y!=2){
-            next = swap(cur, idx, idx+3);
-            flag = s.insert(next);
+            swap(idx, idx+3);
+            flag = s.insert(p);
             if(flag.second)
-                q.push(make_pair(next, cnt+1));
+                q.push(make_pair(p, cnt+1));
+            swap(idx, idx+3);
         }
     }
     return -1;
@@ -93,6 +85,6 @@ int main(void){
             break;
         }
     }
-    int ans = bfs();
-    printf("%d\n", ans);
+    printf("%d\n", bfs());
 }
+
