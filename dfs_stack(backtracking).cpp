@@ -35,6 +35,8 @@ void dfs(int tar){
             dr.pop_back();
             cur[from] = 0;
         }
+	else
+	    cur[from]--;
     }
 }
 
