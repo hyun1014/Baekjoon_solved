@@ -1,56 +1,80 @@
-#pragma warning(disable : 4996)
-#include <iostream>
-#include <vector>
+#include <stdio.h>
 #include <algorithm>
+#include <vector>
+#include <stack>
 #include <queue>
-using namespace std;
-int v;
-bool graph[1001][1001];
 
-void bfs(int start, bool checked[]) {
-	int temp, i;
-	queue<int> que;
-	que.push(start);
-	checked[start] = true;
-	while (!que.empty()) {
-		temp = que.front();
-		que.pop();
-		printf("%d ", temp);
-		for (i = 1; i <= v; i++) {
-			if ((checked[i] == false) && (graph[temp][i] == true)) {
-				que.push(i);
-				checked[i] = true;
-			}
-		}
-	}
+using namespace std;
+
+vector<bool> visited;
+vector<vector<int>> node;
+vector<int> idx;
+
+void dfs(int start){
+    stack<int> stk;
+    int cur, esize;
+    visited[start] = true;
+    stk.push(start);
+    while(!stk.empty()){
+        cur = stk.top();
+        if(idx[cur]==-1){
+            printf("%d ", cur);
+            idx[cur]++;
+        }
+        esize = node[cur].size();
+        for( ; idx[cur]<esize; idx[cur]++){
+            if(!visited[node[cur][idx[cur]]]){
+                visited[node[cur][idx[cur]]] = true;
+                stk.push(node[cur][idx[cur]]);
+                break;
+            }
+        }
+        if(idx[cur]==esize)
+            stk.pop();
+    }
 }
-void dfs(int start, bool checked[]) {
-	int i;
-	if (checked[start] == true)
-		return;
-	checked[start] = true;
-	printf("%d ", start);
-	for (i = 1; i <= v; i++) {
-		if ((checked[i] == false) && (graph[start][i] == true)) {
-			dfs(i, checked);
-		}
-	}
+void bfs(int start){
+    queue<int> q;
+    int cur, esize;
+    q.push(start);
+    visited[start] = true;
+    while(!q.empty()){
+        cur = q.front();
+        q.pop();
+        printf("%d ", cur);
+        esize = node[cur].size();
+        for(int i=0; i<esize; i++){
+            if(!visited[node[cur][i]]){
+                visited[node[cur][i]] = true;
+                q.push(node[cur][i]);
+            }
+        }
+    }
+
 }
-int main(void) {
-	int i, m, start, a, b;
-	scanf("%d %d %d", &v, &m, &start);
-	bool* checked = new bool[v + 1];
-	fill(checked, checked + v + 1, false);
-	for (i = 0; i < m; i++) {
-		scanf("%d %d", &a, &b);
-		graph[a][b] = true;
-		graph[b][a] = true;
-	}
-	dfs(start, checked);
-	printf("\n");
-	fill(checked, checked + v + 1, false);
-	bfs(start, checked);
-	printf("\n");
-	delete[] checked;
-	return 0;
+
+bool cmp(int a, int b){
+    return a > b;
+}
+
+int main(void){
+    int n, m, v, a, b;
+    scanf("%d %d %d", &n, &m, &v);
+    visited.assign(n+1, false);
+    idx.assign(n+1, -1);
+    node.assign(n+1, vector<int>(0, 0));
+    for(int i=0; i<m; i++){
+        scanf("%d %d", &a, &b);
+        node[a].push_back(b);
+        node[b].push_back(a);
+    }
+    for(int i=1; i<=n; i++)
+        sort(node[i].begin(), node[i].end());
+    dfs(v);
+    printf("\n");
+    for(int i=1; i<=n; i++)
+        visited[i] = false;
+    bfs(v);
+    printf("\n");
+    return 0;
 }
