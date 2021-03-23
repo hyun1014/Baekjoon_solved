@@ -1,90 +1,77 @@
 #include <stdio.h>
 #include <vector>
-#include <queue>
 #include <algorithm>
+#include <queue>
 #include <set>
-
+#include <math.h>
 using namespace std;
 
-set<vector<char>> s;
-pair<set<vector<char>>::iterator, bool> flag;
-vector<char> p;
-void swap(int a, int b){
-    char tmp = p[a];
-    p[a] = p[b];
-    p[b] = tmp;
-}
-bool cmpans(vector<char> v){
-    for(int i=0 ; i<9 ; i++)
-        if(v[i]!=(49+i))
-            return false;
-    return true;
-}
-int findz(vector<char> pu){
-    for(int i=0 ; i<9 ; i++)
-        if(pu[i]=='9')
-            return i;
-    return -1;
-}
-int bfs(){
-    queue<pair<vector<char>,int>> q;
-    int cnt, x, y, idx;
-    q.push(make_pair(p, 0));
-    s.insert(p);
-    while(!q.empty()){
-        p = q.front().first;
-        cnt = q.front().second;
-        q.pop();
-        if(cmpans(p))
-            return cnt;
-        idx = findz(p);
-        x = idx % 3;
-        y = idx / 3;
-        if(x!=0){
-            swap(idx, idx-1);
-            flag = s.insert(p);
-            if(flag.second)
-                q.push(make_pair(p, cnt+1));
-            swap(idx, idx-1);
-        }
-        if(x!=2){
-            swap(idx, idx+1);
-            flag = s.insert(p);
-            if(flag.second)
-                q.push(make_pair(p, cnt+1));
-            swap(idx, idx+1);
-        }
-        if(y!=0){
-            swap(idx, idx-3);
-            flag = s.insert(p);
-            if(flag.second)
-                q.push(make_pair(p, cnt+1));
-            swap(idx, idx-3);
-        }
-        if(y!=2){
-            swap(idx, idx+3);
-            flag = s.insert(p);
-            if(flag.second)
-                q.push(make_pair(p, cnt+1));
-            swap(idx, idx+3);
-        }
-    }
-    return -1;
-}
-int main(void){
-    int tmp;
-    char ch;
-    for(int i=0 ; i<9 ; i++){
-        scanf("%d", &tmp);
-        ch = tmp + ('0' - 0);
-        p.push_back(ch);
-    }
-    for(int i=0 ; i<9 ; i++){
-        if(p[i]=='0'){
-            p[i] = '9';
-            break;
-        }
-    }
-    printf("%d\n", bfs());
+int swapNumber(int num, int idx1, int idx2){
+	int tempNum = num;
+	int tempidx = 9 - idx2;
+	while(tempidx>0){
+		tempNum /= 10;
+		tempidx--;
+	}
+	int targetNum = tempNum %= 10;
+
+	return num - (targetNum * (int)pow(10, 9-idx2)) + (targetNum * (int)pow(10, 9-idx1)) ;
 }
 
+vector<int> bfsSearch(int num){
+	vector<int> vec;
+	int tempNum = num;
+	int idx = 9;
+	while(tempNum%10!=0){
+		tempNum /= 10;
+		idx--;
+	}
+	if(idx>3)
+		vec.push_back(swapNumber(num, idx, idx-3));
+	if(idx<7)
+		vec.push_back(swapNumber(num, idx, idx+3));
+	if(idx%3!=1)
+		vec.push_back(swapNumber(num, idx, idx-1));
+	if(idx%3!=0)
+		vec.push_back(swapNumber(num, idx, idx+1));
+	return vec;
+}
+
+int main(void) {
+	int num = 1, prev = 1, next = 0, lv = 0, cur = 0;
+	set<int> numberSet;
+	queue<int> que;
+	for(int i=0; i<9; i++){
+		scanf("%d", &cur);
+		num = (num*10) + cur;
+	}
+	
+	que.push(num);
+	while(!que.empty()){
+		cur = que.front();
+		que.pop();
+		prev--;
+		numberSet.insert(cur);
+		if(cur==1123456780)
+			break;
+
+		vector<int> vec = bfsSearch(cur);
+		for(auto tar : vec){
+			if(numberSet.find(tar)==numberSet.end()){
+				numberSet.insert(tar);
+				que.push(tar);
+				next++;
+			}
+		}
+		if(prev==0){
+			prev = next;
+			next = 0;
+			lv++;
+		}
+	}
+	if(cur!=1123456780)
+		lv = -1;
+	printf("%d\n", lv);
+
+	return 0;
+}
