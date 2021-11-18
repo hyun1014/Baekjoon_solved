@@ -76,11 +76,9 @@ public class Main {
         }
 
         if (!dead) {
-            while (true) {
+            do {
                 answer++;
-                if (!move())
-                    break;
-            }
+            } while (move());
         }
 
         System.out.println(answer);
