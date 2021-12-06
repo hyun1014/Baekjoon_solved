@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 
 public class Main {
     static int[] dx = new int[] {-1, 0, 1, 0};
-    static int[] dy = new int[] {0, -1, 0, 1};
+    static int[] dy = new int[] {0, 1, 0, -1};
     static class Robot {
         int x;
         int y;
@@ -24,7 +24,7 @@ public class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         int n = Integer.parseInt(st.nextToken());
         int m = Integer.parseInt(st.nextToken());
-        boolean[][] isVisited = new boolean[n][n];
+        boolean[][] isVisited = new boolean[n][m];
         int[][] board = new int[n][m];
 
         st = new StringTokenizer(br.readLine());
@@ -46,7 +46,7 @@ public class Main {
                 answer++;
             }
             for (int i = 0; i < 4; i++) {
-                robot.d = (robot.d + 1) % 4;
+                robot.d = (robot.d + 3) % 4;
                 if (robot.x + dx[robot.d] >= 0 && robot.x + dx[robot.d] < n && robot.y + dy[robot.d] >= 0 &&
                     robot.y + dy[robot.d] < m) {
                     int x = robot.x + dx[robot.d];
